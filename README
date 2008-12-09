@@ -1,1 +1,4 @@
-just a test.
+Redmine Encrypt Document plugin
+
+A plugin to store documents encrypted by ring of public keys in
+Redmine.
