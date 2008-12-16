@@ -1,4 +1,4 @@
-Redmine Encrypt Document plugin
+Redmine Encrypted Document plugin
 
 A plugin to store documents encrypted by ring of public keys in
 Redmine.
