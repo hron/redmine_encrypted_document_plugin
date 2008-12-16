@@ -1,3 +1,4 @@
+
 require 'redmine'
 require 'gpgme'
 
