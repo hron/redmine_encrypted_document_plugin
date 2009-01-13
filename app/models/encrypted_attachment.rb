@@ -1,18 +1,16 @@
 class EncryptedAttachment < Attachment
   set_table_name 'attachments'
 
-  serialize :recepients
-
   # Copy temp file to its final location, encrypt the content if needed.
   def before_save
     if @temp_file && (@temp_file.size > 0)
       logger.debug("saving '#{self.diskfile}'")
       File.open(diskfile, "wb") do |f| 
-        if recepients.nil? || recepients.empty?
+        if !( @container.recipients.nil? || @container.recipients.empty?)
           self.content_type = 'application/pgp-encrypted'
-          f.write(@temp_file.read)
+          f.write(GPGME.encrypt_always_trust(@container.recipients, @temp_file.read))
         else
-          f.write(GPGME.encrypt_always_trust(recepients, @temp_file.read))
+          f.write(@temp_file.read)
         end
       end
       self.digest = self.class.digest(diskfile)
@@ -21,5 +19,24 @@ class EncryptedAttachment < Attachment
     if self.content_type && self.content_type.length > 255
       self.content_type = nil
     end
+  end
+
+  private
+
+  def sanitize_filename( value)
+    @filename = unless @container.recipients.nil? || @container.recipients.empty?
+                  super( value) + '.gpg'
+                else
+                  super( value)
+                end
+  end
+
+  # Returns an ASCII or hashed filename
+  def self.disk_filename( filename)
+    df = super( filename)
+    unless @container.recipients.nil? || @container.recipients.empty?
+      df += '.gpg'
+    end
+    df
   end
 end

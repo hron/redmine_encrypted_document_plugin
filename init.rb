@@ -39,6 +39,13 @@ Redmine::Plugin.register :redmine_encrypted_document_plugin do
     cipher = args[0]
     recipient_keys = recipients ? resolve_keys(recipients, false) : nil
 
+    RAILS_DEFAULT_LOGGER.info "GnuPG: #{ENV['GNUPGHOME']}"
+    RAILS_DEFAULT_LOGGER.info "recipients: #{recipients}"
+    RAILS_DEFAULT_LOGGER.info "recipient_keys: #{recipient_keys}"
+#     recipient_keys.each do |key|
+#       RAILS_DEFAULT_LOGGER.info "key: #{key}"
+#     end
+    
     ctx = GPGME::Ctx.new(options)
     plain_data = input_data(plain)
     cipher_data = output_data(cipher)

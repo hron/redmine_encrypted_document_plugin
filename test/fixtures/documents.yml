@@ -1,0 +1,12 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+document_for_gusev_and_neborsky: 
+  created_on: 2008-01-27 15:08:27 +01:00
+  project_id: 1
+  title: "Test document with Gusev & Neborsky as recepients."
+  id: 2
+  description: "Document description"
+  category_id: 1
+  recipients: |
+    <%= [ 'aleksei.gusev@gmail.com', 'nikolay.neborsky@warecorp.com' ].to_yaml.gsub(/\n/,"\n    ") %>
+
+
