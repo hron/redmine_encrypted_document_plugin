@@ -1,4 +1,4 @@
-<% recipients_count = ( @encrypted_document && @encrypted_document.recipients) ? @encrypted_document.recipients.size : 0 %>
+<% recipients_count = ( @document && @document.recipients) ? @document.recipients.size : 0 %>
 <script type="text/javascript">
   //<![CDATA[
 var recipientCount = <%= recipients_count%>;
@@ -6,30 +6,30 @@ var recipientCount = <%= recipients_count%>;
 function addRecipientField() {
     var f = document.createElement("input");
     f.type = "text";
-    f.name = "encrypted_document[recipients][" + recipientCount + "]";
-    p = document.getElementById("encrypted_document[recipients]");
+    f.name = "document[recipients][" + recipientCount + "]";
+    p = document.getElementById("document[recipients]");
     p.appendChild(f);
     p.appendChild(document.createElement("br"));
     recipientCount++;
 }
 //]]>
 </script>
-<%= error_messages_for 'encrypted_document' %>
+<%= error_messages_for 'document' %>
 <div class="box">
-<!--[form:encrypted_document]-->
-<p><label for="encrypted_document_category_id"><%=l(:field_category)%></label>
-<%= select('encrypted_document', 'category_id', Enumeration.get_values('DCAT').collect {|c| [c.name, c.id]}) %></p>
+<!--[form:document]-->
+<p><label for="document_category_id"><%=l(:field_category)%></label>
+<%= select( 'document', 'category_id', Enumeration.get_values('DCAT').collect {|c| [c.name, c.id]}) %></p>
 
-<p><label for="encrypted_document_title"><%=l(:field_title)%> <span class="required">*</span></label>
-<%= text_field 'encrypted_document', 'title', :size => 60 %></p>
+<p><label for="document_title"><%=l(:field_title)%> <span class="required">*</span></label>
+<%= text_field 'document', 'title', :size => 60 %></p>
 
-<p><label for="encrypted_document_description"><%=l(:field_description)%></label>
-<%= text_area 'encrypted_document', 'description', :cols => 60, :rows => 15, :class => 'wiki-edit' %></p>
+<p><label for="document_description"><%=l(:field_description)%></label>
+<%= text_area 'document', 'description', :cols => 60, :rows => 15, :class => 'wiki-edit' %></p>
 
-<p><label for="encrypted_document_recipients"><%= l(:field_recipients)%></label>
-<span id="encrypted_document[recipients]">
-  <% if @encrypted_document && !( @encrypted_document.recipients.nil? || @encrypted_document.recipients.empty?) %>
-    <% @encrypted_document.recipients.each_with_index do |recipient, index| %>
+<p><label for="document_recipients"><%= l(:field_recipients)%></label>
+<span id="document[recipients]">
+  <% if @document && !( @document.recipients.nil? || @document.recipients.empty?) %>
+    <% @document.recipients.each_with_index do |recipient, index| %>
       <%= render( :partial => 'encrypted_documents/recipient',
 		  :locals => { :recipient => recipient, :index => index }) %>
     <% end %>

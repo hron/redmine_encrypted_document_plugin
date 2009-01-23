@@ -1,29 +1,51 @@
 class EncryptedDocumentsController < DocumentsController
   unloadable
 
-#   before_filter :find_project,  :only   => [ :index, :new, :find_recipients]
-#   before_filter :find_document, :except => [ :index, :new, :find_recipients]
-#   before_filter :authorize,     :except => [ :find_recipients ]
-
+  helper :encrypted_attachments
+  include EncryptedAttachmentsHelper
+  
   def new
-    params[:encrypted_document][:project_id] = @project.id
-    if params[:encrypted_document][:recipients]
-      params[:encrypted_document][:recipients] = params[:encrypted_document][:recipients].values
-      params[:encrypted_document][:recipients].delete_if { |r| r.blank? }
+    params[:document][:project_id] = @project.id
+    if params[:document][:recipients]
+      params[:document][:recipients] = params[:document][:recipients].values
+      params[:document][:recipients].delete_if { |r| r.blank? }
     end
-    @encrypted_document = EncryptedDocument.new( params[:encrypted_document])
-    if request.post? and @encrypted_document.save
-      attach_files(@encrypted_document, params[:attachments])
+    @document = EncryptedDocument.new( params[:document])
+    if request.post? and @document.save
+      attach_encrypted_files(@document, params[:attachments])
       flash[:notice] = l(:notice_successful_create)
-      Mailer.deliver_document_added(@encrypted_document) if Setting.notified_events.include?('document_added')
+      Mailer.deliver_document_added(@document) if Setting.notified_events.include?('document_added')
       redirect_to :action => 'index', :project_id => @project
     end
   end
+
+  def add_attachment
+    attachments = attach_encrypted_files(@document, params[:attachments])
+    Mailer.deliver_attachments_added(attachments) if !attachments.empty? && Setting.notified_events.include?('document_added')
+    redirect_to :action => 'show', :id => @document
+  end
+
+#   def edit
+#     @categories = Enumeration::get_values('DCAT')
+#     if request.post? and @document.update_attributes(params[:document])
+#       flash[:notice] = l(:notice_successful_update)
+#       redirect_to :action => 'show', :id => @document
+#     end
+#   end  
 
 #   def find_recipients
 #     @phrase = params[:recipient_search]
 #     @candidates = User.find( :all, :conditions => [ "mail LIKE ?", "%#{@phrase}%" ])
 #     render :inline => "<%= auto_complete_result( @candidates.collect { |c| c.mail }, @phrase) %>"
   #   end
+
+  private
+  
+  def find_document
+    @document = EncryptedDocument.find(params[:id])
+    @project = @document.project
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
 
 end

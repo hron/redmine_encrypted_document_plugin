@@ -1,4 +1,5 @@
 class EncryptedAttachment < Attachment
+  unloadable
   set_table_name 'attachments'
 
   # Copy temp file to its final location, encrypt the content if needed.

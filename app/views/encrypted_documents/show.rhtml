@@ -11,8 +11,17 @@
 <%= textilizable @document.description, :attachments => @document.attachments %>
 </div>
 
+<% unless @document.recipients.empty? -%>
+  <h3><%= l(:label_recipient_plural) %></h3>
+  <ul>
+    <% @document.recipients.each do |recipient| -%>
+      <li><%= link_to recipient, "mailto: #{recipient}" %></li>
+    <% end -%>
+  </ul>
+<% end -%>
+
 <h3><%= l(:label_attachment_plural) %></h3>
-<%= link_to_attachments @attachments, :delete_url => (authorize_for('encrypted_documents', 'destroy_attachment') ? {:controller => 'encrypted_documents', :action => 'destroy_attachment', :id => @document} : nil) %>
+<%= link_to_attachments @document %>
 
 <% if authorize_for('encrypted_documents', 'add_attachment') %>
 <p><%= link_to l(:label_attachment_new), {}, :onclick => "Element.show('add_attachment_form'); Element.hide(this); Element.scrollTo('add_attachment_form'); return false;",
@@ -26,3 +35,4 @@
 <% end %>
 
 <% html_title @document.title -%>
+
