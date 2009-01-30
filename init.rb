@@ -28,6 +28,8 @@ Redmine::Plugin.register :redmine_encrypted_document_plugin do
         { :controller => 'encrypted_documents', :action => 'index' }, :param => :project_id,
         :caption => 'Documents')
 
+  menu :top_menu, :gpgme, {:controller => 'gpgme', :action => 'index'}, :caption => 'GPGME'
+
   ENV['GNUPGHOME'] = "#{RAILS_ROOT}/tmp/gnupghome"
   
   RAILS_DEFAULT_LOGGER.info "Redmine Encrypted Document plugin is loaded. Public keys ring: " +

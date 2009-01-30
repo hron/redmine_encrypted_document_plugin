@@ -5,11 +5,8 @@ class EncryptedDocument < Document
   serialize :recipients
 
   def validate
-    if @attributes['recipients']
-      @attributes['recipients'].each do |r|
-        errors.add :recipients, "one of the recipients is unknown" if GPGME.resolve_keys( r, false).empty?
-      end
-    end
+    @attributes['recipients'].each do |r|
+      errors.add :recipients, "one of the recipients is unknown" if GPGME.resolve_keys( r, false).empty?
+    end if @attributes['recipients']
   end
-
 end

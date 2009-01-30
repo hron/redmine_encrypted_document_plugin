@@ -1,0 +1,11 @@
+<h2><%=l(:label_gpgkey_new)%></h2>
+
+<% form_tag({:controller => 'gpgme', :action => 'import_key'}, :class => "tabular") do %>
+
+<p><label for="public_key_asc"><%=l(:field_public_key_asc)%></label>
+<%= text_area_tag 'public_key_asc', params[:public_key_asc], :cols => 65, :rows => 20 %></p>
+
+<%= submit_tag l(:button_import) %>
+<% end %>
+
+

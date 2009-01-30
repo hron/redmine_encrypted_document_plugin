@@ -1,4 +1,4 @@
-<% recipients_count = ( @document && @document.recipients) ? @document.recipients.size : 0 %>
+<% recipients_count = ( @document && @document.recipients) ? @document.recipients.size : 1 %>
 <script type="text/javascript">
   //<![CDATA[
 var recipientCount = <%= recipients_count%>;
@@ -6,6 +6,7 @@ var recipientCount = <%= recipients_count%>;
 function addRecipientField() {
     var f = document.createElement("input");
     f.type = "text";
+    f.size = 30;
     f.name = "document[recipients][" + recipientCount + "]";
     p = document.getElementById("document[recipients]");
     p.appendChild(f);
@@ -14,7 +15,13 @@ function addRecipientField() {
 }
 //]]>
 </script>
+
+<% if GPGME.resolve_keys( [ Setting.mail_from ], true).empty? -%>
+  <%= render :partial => 'no_redmine_private_key' %>
+<% end -%>
+
 <%= error_messages_for 'document' %>
+
 <div class="box">
 <!--[form:document]-->
 <p><label for="document_category_id"><%=l(:field_category)%></label>
@@ -26,6 +33,7 @@ function addRecipientField() {
 <p><label for="document_description"><%=l(:field_description)%></label>
 <%= text_area 'document', 'description', :cols => 60, :rows => 15, :class => 'wiki-edit' %></p>
 
+<% unless GPGME.resolve_keys( [ Setting.mail_from ], true).empty? -%>
 <p><label for="document_recipients"><%= l(:field_recipients)%></label>
 <span id="document[recipients]">
   <% if @document && !( @document.recipients.nil? || @document.recipients.empty?) %>
@@ -40,7 +48,7 @@ function addRecipientField() {
 </span>
 <small><%= link_to l(:label_add_another_recipient), '#', :onclick => 'addRecipientField(); return false;' %></small>
 </p>
-
+<% end -%>
 <!--[eoform:encrypted_document]-->
 </div>
 

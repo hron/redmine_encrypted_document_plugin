@@ -3,13 +3,10 @@ class EncryptedDocumentsController < DocumentsController
 
   helper :encrypted_attachments
   include EncryptedAttachmentsHelper
-  
+
   def new
     params[:document][:project_id] = @project.id
-    if params[:document][:recipients]
-      params[:document][:recipients] = params[:document][:recipients].values
-      params[:document][:recipients].delete_if { |r| r.blank? }
-    end
+    parse_params_document_recipients
     @document = EncryptedDocument.new( params[:document])
     if request.post? and @document.save
       attach_encrypted_files(@document, params[:attachments])
@@ -19,19 +16,24 @@ class EncryptedDocumentsController < DocumentsController
     end
   end
 
+  def edit
+    parse_params_document_recipients
+    @categories = Enumeration::get_values('DCAT')
+    if request.post? and @document.update_attributes(params[:document])
+      EncryptedAttachment.find_all_by_container_type_and_container_id( 'document', @document.id).each do |a|
+        RAILS_DEFAULT_LOGGER.info a.diskfile
+        a.re_encrypt!
+      end
+      flash[:notice] = l(:notice_successful_update)
+      redirect_to :action => 'show', :id => @document
+    end
+  end  
+
   def add_attachment
     attachments = attach_encrypted_files(@document, params[:attachments])
     Mailer.deliver_attachments_added(attachments) if !attachments.empty? && Setting.notified_events.include?('document_added')
     redirect_to :action => 'show', :id => @document
   end
-
-#   def edit
-#     @categories = Enumeration::get_values('DCAT')
-#     if request.post? and @document.update_attributes(params[:document])
-#       flash[:notice] = l(:notice_successful_update)
-#       redirect_to :action => 'show', :id => @document
-#     end
-#   end  
 
 #   def find_recipients
 #     @phrase = params[:recipient_search]
@@ -46,6 +48,13 @@ class EncryptedDocumentsController < DocumentsController
     @project = @document.project
   rescue ActiveRecord::RecordNotFound
     render_404
+  end
+
+  def parse_params_document_recipients
+    if params[:document] && params[:document][:recipients]
+      params[:document][:recipients] = params[:document][:recipients].values
+      params[:document][:recipients].delete_if { |r| r.blank? }
+    end
   end
 
 end

@@ -1,2 +1,6 @@
-# English strings go here
-my_label: "My label"
+text_no_redmine_private_key: "You have to generate private & public key for redmine to use encrypted documents. See rake task redmine:encrypted_documents:init."
+label_recipient_plural: Recipients
+label_public_key_plural: Public keys
+label_public_key_import: Import key
+field_recipients: Recipients
+label_add_another_recipient: Add another recipient

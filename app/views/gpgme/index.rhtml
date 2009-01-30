@@ -1,0 +1,16 @@
+<div class="contextual">
+  <%= link_to( l(:label_public_key_import),
+	       {:controller => 'gpgme', :action => 'import_key'},
+	       :class => 'icon icon-add') %>
+</div>
+
+<h2><%= l(:label_public_key_plural) %></h2>
+<ul>
+<% @keys.sort { |a,b| a.uids[0].name <=> b.uids[0].name }.each do |key| -%>
+  <li><%= key.uids[0].name -%> (
+    <% key.uids.each do |uid| -%>
+	<a href="mailto: <%= uid.email %>"><%= uid.email %></a>;
+    <% end -%>)
+  </li>
+<% end -%>
+</ul>

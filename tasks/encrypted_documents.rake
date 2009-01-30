@@ -6,16 +6,17 @@ Initialize GnuPG home and generate private & public keys pair.
 You can specify key paramenters with REDMINE_KEY_PARAMS=x, where x is
 the following structure:
 
-<GnupgKeyParms format="internal">
 Key-Type: DSA
 Key-Length: 1024
 Subkey-Type: ELG-E
 Subkey-Length: 1024
 Name-Real: Redmine key
 Name-Comment: Redmine key
-Name-Email: someemail@somehost.somedomain
 Expire-Date: 0
-</GnupgKeyParms>
+
+Remember that Name-Email should be the same as mail_from in the
+settings, it will overriden in any case.
+
 DESC
     task :init => :environment do
       ENV['GNUPGHOME'] = "#{RAILS_ROOT}/tmp/gnupghome"
@@ -268,21 +269,23 @@ EOF
         end
 
         ENV['REDMINE_KEY_PARAMS'] ||= <<EOF
-<GnupgKeyParms format="internal">
 Key-Type: DSA
 Key-Length: 1024
 Subkey-Type: ELG-E
 Subkey-Length: 1024
 Name-Real: Redmine key
 Name-Comment: Redmine key
-Name-Email: #{Setting.mail_from}
 Expire-Date: 0
-</GnupgKeyParms>
 EOF
 
-        # not needed for now.
-#         puts "Generating public & private keys (takes some time)..."
-#         GPGME::Ctx.new.genkey( ENV['REDMINE_KEY_PARAMS'], nil, nil)
+        key_params = "<GnupgKeyParms format=\"internal\">\n" + ENV['REDMINE_KEY_PARAMS']
+        key_params.gsub! /^Name-Email:.*$/, ''
+        key_params << "Name-Email: #{Setting.mail_from}\n"
+        key_params << '</GnupgKeyParms>'
+
+        puts key_params
+        puts "Generating public & private keys (takes some time)..."
+        GPGME::Ctx.new.genkey( key_params, nil, nil)
       end
     end
  end
