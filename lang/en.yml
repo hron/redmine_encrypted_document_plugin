@@ -2,5 +2,8 @@ text_no_redmine_private_key: "You have to generate private & public key for redm
 label_recipient_plural: Recipients
 label_public_key_plural: Public keys
 label_public_key_import: Import key
+field_public_key_asc: "Paste your key in ASC format:"
 field_recipients: Recipients
 label_add_another_recipient: Add another recipient
+label_gpgkey_new: Import PGP key
+button_import: Import
