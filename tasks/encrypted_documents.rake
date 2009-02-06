@@ -19,7 +19,7 @@ settings, it will overriden in any case.
 
 DESC
     task :init => :environment do
-      ENV['GNUPGHOME'] = "#{RAILS_ROOT}/tmp/gnupghome"
+      ENV['GNUPGHOME'] = "#{RAILS_ROOT}/gnupghome"
       if File.directory? ENV['GNUPGHOME']
         raise "Directory #{ENV['GNUPGHOME']} is already present. Skipping initialization."
       else
