@@ -20,10 +20,10 @@ settings, it will overriden in any case.
 DESC
     task :init => :environment do
       ENV['GNUPGHOME'] = "#{RAILS_ROOT}/gnupghome"
-      if File.directory? ENV['GNUPGHOME']
+      if File.exist?( "#{ENV['GNUPGHOME']}/secring.gpg")
         raise "Directory #{ENV['GNUPGHOME']} is already present. Skipping initialization."
       else
-        system( "mkdir #{ENV['GNUPGHOME']}")
+        system( "mkdir #{ENV['GNUPGHOME']}") unless File.exist?( "#{ENV['GNUPGHOME']}")
         File.chmod( 0700, ENV['GNUPGHOME'])
 
         File.open( "#{ENV['GNUPGHOME']}/gpg.conf", "w") do |gpg_conf|
